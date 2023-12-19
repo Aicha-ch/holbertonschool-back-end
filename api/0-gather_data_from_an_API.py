@@ -16,9 +16,9 @@ if __name__ == "__main__":
     completed_tasks = [task for task in employee_tasks if task.get("completed")]
 
     print(
-        f"Employee {employee_data['name']} is done with "
+        f"Employee {employee_data['name']} has completed "
         f"tasks({len(completed_tasks)}/{len(employee_tasks)}):"
     )
     for task in completed_tasks:
-        print("\t", task["title"].replace(" ", "S").replace("\t", "T"))
+        print("\t", task["title"])
 

@@ -11,10 +11,10 @@ if __name__ == "__main__":
         print("Usage: python3 script_name.py <employee_id>")
         sys.exit(1)
 
-    employee_id = sys.argv[1]
-    user_url = f'https://jsonplaceholder.typicode.com/users/{employee_id}'
+    emp_id = sys.argv[1]
+    user_url = f'https://jsonplaceholder.typicode.com/users/{emp_id}'
     employee_data = requests.get(user_url).json()
-    todos_url = f'https://jsonplaceholder.typicode.com/todos?userId={employee_id}'
+    todos_url = f'https://jsonplaceholder.typicode.com/todos?userId={emp_id}'
     employee_tasks = requests.get(todos_url).json()
 
     done_tasks = [task for task in employee_tasks if task.get("completed")]
@@ -25,8 +25,3 @@ if __name__ == "__main__":
     )
     for task in done_tasks:
         print("\t", task["title"])
-
-
-
-
-

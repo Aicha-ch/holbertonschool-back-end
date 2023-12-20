@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Enhances the 0-gather_data_from_an_API script to export data in JSON format"""
+""" export data in JSON format"""
 
 import json
 import requests

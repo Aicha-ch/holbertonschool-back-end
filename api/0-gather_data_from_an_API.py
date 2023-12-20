@@ -1,38 +1,42 @@
 #!/usr/bin/python3
-"""script using a REST API, for a given employee ID,
-   returns information about his/her TODO list progress
-"""
+"""Export data in JSON format and print TODO list progress"""
 
+import json
 import requests
-import sys
+from sys import argv
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print(f"Usage: python3 {__file__} employee_id(int)")
-        sys.exit(1)
+if __name__ == '__main__':
+    user_response = requests.get(
+        "https://jsonplaceholder.typicode.com/users/{}".
+        format(argv[1]))
+    user_data = user_response.json()
 
-    BASE_URL = "https://jsonplaceholder.typicode.com"
-    EMPLOYEE_ID = int(sys.argv[1])
+    tasks_response = requests.get(
+        "https://jsonplaceholder.typicode.com/todos?userId={}".
+        format(argv[1]))
+    todo_data = tasks_response.json()
 
-    # Fetch  todo list of an employee
-    EMPLOYEE_TODOS = requests.get(f"{BASE_URL}/users/{EMPLOYEE_ID}/todos",
-                                  params={"_expand": "user"})
-    TODO_DATA = EMPLOYEE_TODOS.json()
-    EMPLOYEE_NAME = TODO_DATA[0]["user"]["name"]
+    username = user_data.get("username")
+    user_id = argv[1]
 
-    # Calculate TODO list and completed todo list
-    TOTAL_NUMBER_OF_TASKS = len(TODO_DATA)
-    NUMBER_OF_DONE_TASKS = 0
-    TASK_TITLE = []
-    for task in TODO_DATA:
-        if task["completed"]:
-            NUMBER_OF_DONE_TASKS += 1
-            TASK_TITLE.append(task["title"])
+    tasks = []
+    completed_tasks = []
+    for task in todo_data:
+        task_dict = {
+            "task": task.get('title'),
+            "completed": task.get('completed'),
+            "username": username
+        }
+        tasks.append(task_dict)
+        if task.get('completed'):
+            completed_tasks.append(task.get('title'))
 
-    # Display progress information
-    print(f"Employee {EMPLOYEE_NAME} is done with tasks"
-          f"({NUMBER_OF_DONE_TASKS}/{TOTAL_NUMBER_OF_TASKS}):")
+    print("Employee {} is done with tasks({}/{}):".format(username,
+                                                          len(completed_tasks), len(tasks)))
+    for task in completed_tasks:
+        print("\t {}".format(task))
 
-    # Display titles of completed tasks
-    for title in TASK_TITLE:
-        print("\t ", title)
+    todos = {user_id: tasks}
+
+    with open("{}.json".format(user_id), 'w') as jsonfile:
+        json.dump(todos, jsonfile)
